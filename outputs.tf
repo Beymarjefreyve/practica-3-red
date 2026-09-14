@@ -8,4 +8,3 @@ output "subred_publica" {
   value       = google_compute_subnetwork.publica.self_link
   description = "Identificador completo de la subred de aplicación"
 }
- terraform 
