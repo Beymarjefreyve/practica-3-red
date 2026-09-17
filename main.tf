@@ -22,3 +22,26 @@ resource "google_compute_subnetwork" "publica" {
   region        = var.region
   network       = google_compute_network.vpc.id
 }
+
+# main.tf (añadir)
+resource "google_compute_instance" "app" {
+  name         = "${var.prefijo}-app"
+  machine_type = var.tipo_maquina
+  zone         = var.zona
+  tags         = ["servidor-web"]
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-12"
+    }
+  }
+
+  network_interface {
+    # la máquina debe quedar en tu subred, no en la default
+    subnetwork = var.subred
+    # un bloque vacío aquí otorga una IP pública efímera
+    access_config {}
+  }
+
+  metadata_startup_script = file("arranque.sh")
+}
