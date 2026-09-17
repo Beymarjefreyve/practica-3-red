@@ -38,7 +38,7 @@ resource "google_compute_instance" "app" {
 
   network_interface {
     # la máquina debe quedar en tu subred, no en la default
-    subnetwork = var.subred
+    subnetwork = google_compute_subnetwork.publica.id
     # un bloque vacío aquí otorga una IP pública efímera
     access_config {}
   }
