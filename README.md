@@ -161,10 +161,25 @@ ALLOW: tcp:22
 
 ### Evidencia 5 — Reproducir desde cero
 
-Verificación de la reproducibilidad de la infraestructura como código mediante la destrucción total de los recursos con `terraform destroy` y su posterior reconstrucción limpia con `terraform apply`.
+Verificación de la reproducibilidad de la infraestructura como código mediante la destrucción total de los recursos con `terraform destroy` y su posterior reconstrucción limpia con `terraform apply`, demostrando la asignación de una nueva dirección IP pública efímera y la correcta inicialización del servicio.
 
-![Evidencia 5](evidencias/EVIDENCIA-5.png)
+![Evidencia 5 - Destroy](evidencias/EVIDENCIA-5.png)
 Destrucción completa de los recursos gestionados (`Destroy complete! Resources: 5 destroyed.`) antes de proceder a la reconstrucción integral del entorno.
+
+![Evidencia 5 - Reconstrucción y Nueva IP](evidencias/EVIDENCIA-5-2.png)
+Recreación de la infraestructura con `terraform apply`, asignación de una nueva IP pública efímera (`34.9.202.217`) y comprobación exitosa del servicio mediante `curl`.
+
+```text
+Outputs:
+
+ip_publica_app = "34.9.202.217"
+red = "villamizar-vpc"
+subred_publica = "https://www.googleapis.com/compute/v1/projects/project-3111890e-6ba4-4e0e-95f/regions/us-central1/subnetworks/villamizar-sub-publica"
+
+yefreybeimar2005@cloudshell:~/practica-3-red (project-3111890e-6ba4-4e0e-95f)$ curl -m 8 http://34.9.202.217
+<h1>Beymar Villamizar</h1>
+<p>Servidor de aplicación. IP interna: 10.10.1.2</p>
+```
 
 ```bash
 terraform destroy
@@ -342,3 +357,30 @@ Terraform opera mediante la comparación entre el estado deseado (definido en el
 > Estimación calculada con base en los precios estándar de Google Cloud Platform para la región `us-central1` operando 730 horas continuas al mes.
 
 El recurso que resulta más sorprendente en la estructura de costos es **Cloud NAT**. A diferencia de las instancias de cómputo cuyo consumo cesa al apagarlas, la pasarela de Cloud NAT factura una tarifa base fija continua por hora simplemente por existir, con independencia de si cursa tráfico o si las máquinas asociadas están detenidas. En escenarios con cargas de trabajo mínimas o de prueba, el costo de disponibilidad de Cloud NAT puede superar ampliamente el costo mensual de las propias instancias `e2-micro`.
+ 
+---
+ 
+## El estado no va al repositorio
+ 
+El archivo de estado de Terraform contiene información sensible sobre la infraestructura aprovisionada (identificadores, configuraciones de red y metadatos) que no debe almacenarse en el control de versiones público. Desde el commit inicial del proyecto, el archivo `.gitignore` incluye las directivas necesarias para excluir el directorio local `.terraform/` y los ficheros `*.tfstate*`:
+ 
+```gitignore
+# .gitignore
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+```
+ 
+Para verificar que ningún archivo de estado o binario del proveedor haya sido indexado por Git, se ejecutó la comprobación sobre el árbol de trabajo rastreado:
+ 
+```bash
+git ls-files | grep -E "tfstate|\.terraform"
+```
+ 
+**Salida obtenida:**
+```text
+(salida vacía)
+```
+ 
+La ausencia total de resultados confirma que la configuración de exclusión se cumple estrictamente y que el estado de Terraform se mantiene aislado en el entorno local de trabajo.
