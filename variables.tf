@@ -32,7 +32,12 @@ variable "cidr_privada" {
     default = "10.10.2.0/24"
 }
 
-variable "subred" {
-    type = string
-    default = "https://www.googleapis.com/compute/v1/projects/project-3111890e-6ba4-4e0e-95f/regions/us-central1/subnetworks/villamizar-sub-publica"
+variable "identificacion" {
+  type        = string
+  description = "Identificacion del equipo que se muestra en la pagina"
+}
+
+variable "puerto_datos" {
+  type    = number
+  default = 8080
 }
