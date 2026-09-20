@@ -358,29 +358,3 @@ Terraform opera mediante la comparación entre el estado deseado (definido en el
 
 El recurso que resulta más sorprendente en la estructura de costos es **Cloud NAT**. A diferencia de las instancias de cómputo cuyo consumo cesa al apagarlas, la pasarela de Cloud NAT factura una tarifa base fija continua por hora simplemente por existir, con independencia de si cursa tráfico o si las máquinas asociadas están detenidas. En escenarios con cargas de trabajo mínimas o de prueba, el costo de disponibilidad de Cloud NAT puede superar ampliamente el costo mensual de las propias instancias `e2-micro`.
  
----
- 
-## El estado no va al repositorio
- 
-El archivo de estado de Terraform contiene información sensible sobre la infraestructura aprovisionada (identificadores, configuraciones de red y metadatos) que no debe almacenarse en el control de versiones público. Desde el commit inicial del proyecto, el archivo `.gitignore` incluye las directivas necesarias para excluir el directorio local `.terraform/` y los ficheros `*.tfstate*`:
- 
-```gitignore
-# .gitignore
-.terraform/
-*.tfstate
-*.tfstate.*
-crash.log
-```
- 
-Para verificar que ningún archivo de estado o binario del proveedor haya sido indexado por Git, se ejecutó la comprobación sobre el árbol de trabajo rastreado:
- 
-```bash
-git ls-files | grep -E "tfstate|\.terraform"
-```
- 
-**Salida obtenida:**
-```text
-(salida vacía)
-```
- 
-La ausencia total de resultados confirma que la configuración de exclusión se cumple estrictamente y que el estado de Terraform se mantiene aislado en el entorno local de trabajo.
